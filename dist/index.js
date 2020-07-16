@@ -7279,8 +7279,13 @@ var script = {
     },
     getCountriesSearchBy: function getCountriesSearchBy(country) {
       switch (true) {
+        case this.searchByName && this.searchByCode:
+          return function (country) {
+            return [country.name.toLowerCase(), "+".concat(country.dialCode)];
+          }(country);
+
         case this.searchByName:
-          return country.name;
+          return country.name.toLowerCase();
 
         case this.searchByCode:
           return "+".concat(country.dialCode);
@@ -7346,6 +7351,19 @@ var script = {
       this.countriesSearchString = e.target.value;
       this.actualCountries = this.sortedCountries.filter(function (country) {
         var searchBy = _this7.getCountriesSearchBy(country);
+
+        if (Array.isArray(searchBy)) {
+          var result = false;
+          console.log('---------------');
+          searchBy.forEach(function (element) {
+            console.log('!!', element, _this7.countriesSearchString.toLowerCase());
+
+            if (~element.indexOf(_this7.countriesSearchString.toLowerCase())) {
+              result = true;
+            }
+          });
+          return result;
+        }
 
         return searchBy && ~searchBy.indexOf(_this7.countriesSearchString);
       });
@@ -7415,7 +7433,7 @@ var script = {
         if (this.selectedIndex === null) {
           this.selectedIndex = 0;
         } else {
-          this.selectedIndex = Math.min(this.sortedCountries.length - 1, this.selectedIndex + 1);
+          this.selectedIndex = Math.min(this.actualCountries.length - 1, this.selectedIndex + 1);
         }
 
         var selEle = this.$refs.list.children[this.selectedIndex];
@@ -7429,7 +7447,7 @@ var script = {
         this.open = true;
 
         if (this.selectedIndex === null) {
-          this.selectedIndex = this.sortedCountries.length - 1;
+          this.selectedIndex = this.actualCountries.length - 1;
         } else {
           this.selectedIndex = Math.max(0, this.selectedIndex - 1);
         }
@@ -7442,7 +7460,7 @@ var script = {
       } else if (e.keyCode === 13) {
         // enter key
         if (this.selectedIndex !== null) {
-          this.choose(this.sortedCountries[this.selectedIndex], true);
+          this.choose(this.actualCountries[this.selectedIndex], true);
         }
 
         this.open = !this.open;
@@ -7454,7 +7472,7 @@ var script = {
           _this8.typeToFindInput = '';
         }, 700); // don't include preferred countries so we jump to the right place in the alphabet
 
-        var typedCountryI = this.sortedCountries.slice(this.preferredCountries.length).findIndex(function (c) {
+        var typedCountryI = this.actualCountries.slice(this.preferredCountries.length).findIndex(function (c) {
           return c.name.toLowerCase().startsWith(_this8.typeToFindInput);
         });
 
@@ -7471,7 +7489,7 @@ var script = {
       }
     },
     reset: function reset() {
-      this.selectedIndex = this.sortedCountries.map(function (c) {
+      this.selectedIndex = this.actualCountries.map(function (c) {
         return c.iso2;
       }).indexOf(this.activeCountry.iso2);
       this.open = false;
@@ -8215,7 +8233,7 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-93f7fe28_0", {
+  inject("data-v-7d32c553_0", {
     source: ".vue-tel-input{border-radius:3px;display:flex;border:1px solid #bbb;text-align:left}.vue-tel-input.disabled .dropdown,.vue-tel-input.disabled .selection,.vue-tel-input.disabled input{cursor:no-drop}.vue-tel-input:focus-within{box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);border-color:#66afe9}.vti__dropdown{display:flex;flex-direction:column;align-content:center;justify-content:center;position:relative;padding:7px;cursor:pointer}.vti__dropdown.show{max-height:300px;overflow:scroll}.vti__dropdown.open{background-color:#f3f3f3}.vti__dropdown:hover{background-color:#f3f3f3}.vti__selection{font-size:.8em;display:flex;align-items:center}.vti__selection .vti__country-code{color:#666}.vti__flag{margin-right:5px;margin-left:5px}.vti__dropdown-wrapper{position:absolute}.vti__dropdown-wrapper.below{top:33px}.vti__dropdown-wrapper.above{top:auto;bottom:100%}.vti__dropdown-country-search{width:100%;display:block;font-size:16px;padding:8px 18px}.vti__dropdown-list{z-index:1;padding:0;margin:0;text-align:left;list-style:none;max-height:200px;overflow-y:scroll;left:-1px;background-color:#fff;border:1px solid #ccc;width:390px}.vti__dropdown-arrow{transform:scaleY(.5);display:inline-block;color:#666}.vti__dropdown-item{cursor:pointer;padding:4px 15px}.vti__dropdown-item.highlighted{background-color:#f3f3f3}.vti__dropdown-item.last-preferred{border-bottom:1px solid #cacaca}.vti__dropdown-item .vti__flag{display:inline-block;margin-right:5px}.vti__input{border:none;border-radius:0 2px 2px 0;width:100%;outline:0;padding-left:7px}",
     map: undefined,
     media: undefined

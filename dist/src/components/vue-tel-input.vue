@@ -440,8 +440,16 @@ export default {
     },
     getCountriesSearchBy(country) {
       switch (true) {
+        case this.searchByName && this.searchByCode:
+          return (function(country) {
+            return [
+              country.name.toLowerCase(),
+              `+${country.dialCode}`,
+            ];
+          })(country);
+
         case this.searchByName:
-          return country.name;
+          return country.name.toLowerCase();
 
         case this.searchByCode:
           return `+${country.dialCode}`;
@@ -499,6 +507,21 @@ export default {
 
       this.actualCountries = this.sortedCountries.filter(country => {
         const searchBy = this.getCountriesSearchBy(country);
+
+        if (Array.isArray(searchBy)) {
+          let result = false;
+
+          console.log('---------------');
+
+          searchBy.forEach(element => {
+            console.log('!!', element, this.countriesSearchString.toLowerCase());
+            if (~element.indexOf(this.countriesSearchString.toLowerCase())) {
+              result = true;
+            }
+          });
+
+          return result;
+        }
 
         return searchBy && ~searchBy.indexOf(this.countriesSearchString);
       });
@@ -562,7 +585,7 @@ export default {
         if (this.selectedIndex === null) {
           this.selectedIndex = 0;
         } else {
-          this.selectedIndex = Math.min(this.sortedCountries.length - 1, this.selectedIndex + 1);
+          this.selectedIndex = Math.min(this.actualCountries.length - 1, this.selectedIndex + 1);
         }
         const selEle = this.$refs.list.children[this.selectedIndex];
         if (selEle.offsetTop + selEle.clientHeight
@@ -576,7 +599,7 @@ export default {
         e.preventDefault();
         this.open = true;
         if (this.selectedIndex === null) {
-          this.selectedIndex = this.sortedCountries.length - 1;
+          this.selectedIndex = this.actualCountries.length - 1;
         } else {
           this.selectedIndex = Math.max(0, this.selectedIndex - 1);
         }
@@ -587,7 +610,7 @@ export default {
       } else if (e.keyCode === 13) {
         // enter key
         if (this.selectedIndex !== null) {
-          this.choose(this.sortedCountries[this.selectedIndex], true);
+          this.choose(this.actualCountries[this.selectedIndex], true);
         }
         this.open = !this.open;
       } else {
@@ -598,7 +621,7 @@ export default {
           this.typeToFindInput = '';
         }, 700);
         // don't include preferred countries so we jump to the right place in the alphabet
-        const typedCountryI = this.sortedCountries
+        const typedCountryI = this.actualCountries
           .slice(this.preferredCountries.length)
           .findIndex((c) => c.name.toLowerCase().startsWith(this.typeToFindInput));
         if (typedCountryI >= 0) {
@@ -614,7 +637,7 @@ export default {
       }
     },
     reset() {
-      this.selectedIndex = this.sortedCountries.map((c) => c.iso2).indexOf(this.activeCountry.iso2);
+      this.selectedIndex = this.actualCountries.map((c) => c.iso2).indexOf(this.activeCountry.iso2);
       this.open = false;
     },
     setDropdownPosition() {
