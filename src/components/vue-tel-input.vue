@@ -1,5 +1,5 @@
 <template>
-  <div :class="['vue-tel-input', wrapperClasses, { disabled: disabled }]">
+  <div @keyup.enter.prevent.stop :class="['vue-tel-input', wrapperClasses, { disabled: disabled }]">
     <div
       v-click-outside="clickedOutside"
       :class="['vti__dropdown', { open: open }]"
@@ -586,7 +586,7 @@ export default {
           this.selectedIndex = Math.min(this.actualCountries.length - 1, this.selectedIndex + 1);
         }
         const selEle = this.$refs.list.children[this.selectedIndex];
-        if (selEle.offsetTop + selEle.clientHeight
+        if (selEle && selEle.offsetTop + selEle.clientHeight
           > this.$refs.list.scrollTop + this.$refs.list.clientHeight) {
           this.$refs.list.scrollTop = selEle.offsetTop
             - this.$refs.list.clientHeight
@@ -602,7 +602,7 @@ export default {
           this.selectedIndex = Math.max(0, this.selectedIndex - 1);
         }
         const selEle = this.$refs.list.children[this.selectedIndex];
-        if (selEle.offsetTop < this.$refs.list.scrollTop) {
+        if (selEle && selEle.offsetTop < this.$refs.list.scrollTop) {
           this.$refs.list.scrollTop = selEle.offsetTop;
         }
       } else if (e.keyCode === 13) {
@@ -611,6 +611,9 @@ export default {
           this.choose(this.actualCountries[this.selectedIndex], true);
         }
         this.open = !this.open;
+
+        e.preventDefault();
+        return false;
       } else {
         // typing a country's name
         this.typeToFindInput += e.key;
@@ -625,9 +628,9 @@ export default {
         if (typedCountryI >= 0) {
           this.selectedIndex = this.preferredCountries.length + typedCountryI;
           const selEle = this.$refs.list.children[this.selectedIndex];
-          const needToScrollTop = selEle.offsetTop < this.$refs.list.scrollTop;
-          const needToScrollBottom = selEle.offsetTop + selEle.clientHeight
-            > this.$refs.list.scrollTop + this.$refs.list.clientHeight;
+          const needToScrollTop = selEle ? selEle.offsetTop < this.$refs.list.scrollTop : false;
+          const needToScrollBottom = selEle ? selEle.offsetTop + selEle.clientHeight
+            > this.$refs.list.scrollTop + this.$refs.list.clientHeight : false;
           if (needToScrollTop || needToScrollBottom) {
             this.$refs.list.scrollTop = selEle.offsetTop - this.$refs.list.clientHeight / 2;
           }

@@ -7435,7 +7435,7 @@ var script = {
 
         var selEle = this.$refs.list.children[this.selectedIndex];
 
-        if (selEle.offsetTop + selEle.clientHeight > this.$refs.list.scrollTop + this.$refs.list.clientHeight) {
+        if (selEle && selEle.offsetTop + selEle.clientHeight > this.$refs.list.scrollTop + this.$refs.list.clientHeight) {
           this.$refs.list.scrollTop = selEle.offsetTop - this.$refs.list.clientHeight + selEle.clientHeight;
         }
       } else if (e.keyCode === 38) {
@@ -7451,7 +7451,7 @@ var script = {
 
         var _selEle = this.$refs.list.children[this.selectedIndex];
 
-        if (_selEle.offsetTop < this.$refs.list.scrollTop) {
+        if (_selEle && _selEle.offsetTop < this.$refs.list.scrollTop) {
           this.$refs.list.scrollTop = _selEle.offsetTop;
         }
       } else if (e.keyCode === 13) {
@@ -7461,6 +7461,8 @@ var script = {
         }
 
         this.open = !this.open;
+        e.preventDefault();
+        return false;
       } else {
         // typing a country's name
         this.typeToFindInput += e.key;
@@ -7476,8 +7478,8 @@ var script = {
         if (typedCountryI >= 0) {
           this.selectedIndex = this.preferredCountries.length + typedCountryI;
           var _selEle2 = this.$refs.list.children[this.selectedIndex];
-          var needToScrollTop = _selEle2.offsetTop < this.$refs.list.scrollTop;
-          var needToScrollBottom = _selEle2.offsetTop + _selEle2.clientHeight > this.$refs.list.scrollTop + this.$refs.list.clientHeight;
+          var needToScrollTop = _selEle2 ? _selEle2.offsetTop < this.$refs.list.scrollTop : false;
+          var needToScrollBottom = _selEle2 ? _selEle2.offsetTop + _selEle2.clientHeight > this.$refs.list.scrollTop + this.$refs.list.clientHeight : false;
 
           if (needToScrollTop || needToScrollBottom) {
             this.$refs.list.scrollTop = _selEle2.offsetTop - this.$refs.list.clientHeight / 2;
@@ -8100,7 +8102,17 @@ var __vue_render__ = function __vue_render__() {
   return _c('div', {
     class: ['vue-tel-input', _vm.wrapperClasses, {
       disabled: _vm.disabled
-    }]
+    }],
+    on: {
+      "keyup": function keyup($event) {
+        if (!$event.type.indexOf('key') && _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")) {
+          return null;
+        }
+
+        $event.preventDefault();
+        $event.stopPropagation();
+      }
+    }
   }, [_c('div', {
     directives: [{
       name: "click-outside",
@@ -8237,7 +8249,7 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-4dd434b1_0", {
+  inject("data-v-ab8e2c1c_0", {
     source: ".vue-tel-input{border-radius:3px;display:flex;border:1px solid #bbb;text-align:left}.vue-tel-input.disabled .dropdown,.vue-tel-input.disabled .selection,.vue-tel-input.disabled input{cursor:no-drop}.vue-tel-input:focus-within{box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);border-color:#66afe9}.vti__dropdown{display:flex;flex-direction:column;align-content:center;justify-content:center;position:relative;padding:7px;cursor:pointer}.vti__dropdown.show{max-height:300px;overflow:scroll}.vti__dropdown.open{background-color:#f3f3f3}.vti__dropdown:hover{background-color:#f3f3f3}.vti__selection{font-size:.8em;display:flex;align-items:center}.vti__selection .vti__country-code{color:#666}.vti__flag{margin-right:5px;margin-left:5px}.vti__dropdown-wrapper{position:absolute}.vti__dropdown-wrapper.below{top:33px}.vti__dropdown-wrapper.above{top:auto;bottom:100%}.vti__dropdown-country-search{width:100%;display:block;font-size:16px;padding:8px 18px}.vti__dropdown-list{z-index:1;padding:0;margin:0;text-align:left;list-style:none;max-height:200px;overflow-y:scroll;left:-1px;background-color:#fff;border:1px solid #ccc;width:390px}.vti__dropdown-arrow{transform:scaleY(.5);display:inline-block;color:#666}.vti__dropdown-item{cursor:pointer;padding:4px 15px}.vti__dropdown-item.highlighted{background-color:#f3f3f3}.vti__dropdown-item.last-preferred{border-bottom:1px solid #cacaca}.vti__dropdown-item .vti__flag{display:inline-block;margin-right:5px}.vti__input{border:none;border-radius:0 2px 2px 0;width:100%;outline:0;padding-left:7px}",
     map: undefined,
     media: undefined
