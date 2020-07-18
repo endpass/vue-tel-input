@@ -31,6 +31,7 @@
             :class="['vti__dropdown-item', getItemClass(index, pb.iso2)]"
             :key="pb.iso2 + (pb.preferred ? '-preferred' : '')"
             @click="choose(pb, true)"
+            @keyup.enter="choose(pb, true)"
             @mousemove="selectedIndex = index"
           >
             <div v-if="enabledFlags" :class="['vti__flag', pb.iso2.toLowerCase()]" />
@@ -503,7 +504,7 @@ export default {
       return this.customValidate instanceof RegExp ? this.customValidate.test(this.phone) : false;
     },
     onSearchCountryChange(e) {
-      this.countriesSearchString = e.target.value;
+      this.countriesSearchString = e.target.value.toLowerCase();
 
       this.actualCountries = this.sortedCountries.filter(country => {
         const searchBy = this.getCountriesSearchBy(country);
@@ -511,11 +512,8 @@ export default {
         if (Array.isArray(searchBy)) {
           let result = false;
 
-          console.log('---------------');
-
           searchBy.forEach(element => {
-            console.log('!!', element, this.countriesSearchString.toLowerCase());
-            if (~element.indexOf(this.countriesSearchString.toLowerCase())) {
+            if (~element.indexOf(this.countriesSearchString)) {
               result = true;
             }
           });

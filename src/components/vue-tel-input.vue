@@ -31,6 +31,7 @@
             :class="['vti__dropdown-item', getItemClass(index, pb.iso2)]"
             :key="pb.iso2 + (pb.preferred ? '-preferred' : '')"
             @click="choose(pb, true)"
+            @keyup.enter="choose(pb, true)"
             @mousemove="selectedIndex = index"
           >
             <div v-if="enabledFlags" :class="['vti__flag', pb.iso2.toLowerCase()]" />
